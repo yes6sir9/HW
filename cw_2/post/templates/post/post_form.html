@@ -1,0 +1,22 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Create New Post</title>
+        <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
+    </head>
+    <body>
+        <div class="container">
+            <h1>Create New Post</h1>
+            <a href="{% url 'post_list' %}" class="btn cancel-btn">Cancel</a>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn save-btn">Save</button>
+            </form>
+        </div>
+    </body>
+</html>

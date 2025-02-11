@@ -1,0 +1,24 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Post List</title>
+        <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
+    </head>
+    <body>
+        <div class="container">
+            <h1>All Posts</h1>
+            <a href="{% url 'post_create' %}" class="btn create-btn">Create New Post</a>
+            <ul class="post-list">
+                {% for post in posts %}
+                    <li>
+                        <a href="{% url 'post_detail' post.id %}">{{ post.title }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </body>
+</html>
