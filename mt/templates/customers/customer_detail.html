@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block title %}Клиент {{ customer.name }}{% endblock %}
+
+{% block content %}
+<h2>Детали клиента</h2>
+<p><strong>Имя:</strong> {{ customer.name }}</p>
+<p><strong>Телефон:</strong> {{ customer.phone }}</p>
+<a href="/customers/" class="btn btn-primary">Назад</a>
+{% endblock %}

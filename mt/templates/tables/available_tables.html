@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Доступные столы{% endblock %}
+
+{% block content %}
+<h2>Доступные столы</h2>
+<form method="GET">
+    <label for="date">Выберите дату:</label>
+    <input type="date" id="date" name="date" required>
+    <button type="submit" class="btn btn-primary">Показать</button>
+</form>
+
+<table class="table table-bordered mt-3">
+    <thead>
+        <tr>
+            <th>Номер</th>
+            <th>Количество мест</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for table in tables %}
+        <tr>
+            <td>{{ table.number }}</td>
+            <td>{{ table.seats }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

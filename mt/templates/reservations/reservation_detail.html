@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}Бронирование #{{ reservation.id }}{% endblock %}
+
+{% block content %}
+<h2>Детали бронирования</h2>
+<p><strong>Клиент:</strong> {{ reservation.customer.name }}</p>
+<p><strong>Стол:</strong> {{ reservation.table.number }}</p>
+<p><strong>Дата:</strong> {{ reservation.date }}</p>
+<p><strong>Статус:</strong> {{ reservation.status }}</p>
+<a href="/reservations/" class="btn btn-primary">Назад</a>
+{% endblock %}

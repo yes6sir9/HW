@@ -1,89 +1,65 @@
-
-from django.shortcuts import render, redirect, get_object_or_404
-from .forms import ReservationForm
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import get_object_or_404, get_list_or_404
 from django.http import JsonResponse
-from .models import Reservation
-from tables.models import Table
+from django.views.decorators.csrf import csrf_exempt
 import json
+from .models import Reservation
+from customers.models import Customer
+from tables.models import Table
 
-
+@csrf_exempt
 def create_reservation(request):
-    if request.method == "POST":
+    if request.method == 'POST':
         data = json.loads(request.body)
-        customer_id = data["customer_id"]
-        table_id = data["table_id"]
-        date = data["date"]
+        customer_id = data.get('customer')
+        table_id = data.get('table')
+        date = data.get('date')
 
-        
-        existing_reservation = Reservation.objects.filter(table_id=table_id, date=date).exists()
-        if existing_reservation:
-            return JsonResponse({"error": "Table is already booked on this date"}, status=400)
+        customer = get_object_or_404(Customer, id=customer_id)
+        table = get_object_or_404(Table, id=table_id)
 
-        
-        user_existing_reservation = Reservation.objects.filter(customer_id=customer_id, date=date).exists()
-        if user_existing_reservation:
-            return JsonResponse({"error": "You already have a reservation on this date"}, status=400)
+        if Reservation.objects.filter(table=table, date=date).exists():
+            return JsonResponse({'error': 'Этот столик уже забронирован на эту дату'}, status=400)
 
-    
-        reservation = Reservation.objects.create(customer_id=customer_id, table_id=table_id, date=date, status="confirmed")
+        if Reservation.objects.filter(customer=customer, date=date).exists():
+            return JsonResponse({'error': 'У клиента уже есть бронь на эту дату'}, status=400)
 
-        
-        table = Table.objects.get(id=table_id)
-        table.is_available = False
-        table.save()
+        reservation = Reservation.objects.create(customer=customer, table=table, date=date, status="ожидает")
+        return JsonResponse({'message': 'Бронь успешно создана', 'reservation_id': reservation.id})
 
-        return JsonResponse({
-            "id": reservation.id,
-            "customer": reservation.customer.name,
-            "table": f"Table {reservation.table.number}",
-            "date": reservation.date,
-            "status": reservation.status
-        })
-
-def reservation_list(request):
-    reservations = Reservation.objects.all()
-    return render(request, 'reservations/reservations_list.html', {'reservations': reservations})
-
-
-from django.shortcuts import render, redirect, get_object_or_404
-from .models import Reservation
-
-
-
-def delete_reservation(request, id):  
+def get_reservation_details(request, id):
     reservation = get_object_or_404(Reservation, id=id)
+    data = {
+        'id': reservation.id,
+        'customer': reservation.customer.name,
+        'table': reservation.table.number,
+        'date': reservation.date.strftime('%Y-%m-%d'),
+        'status': reservation.status
+    }
+    return JsonResponse(data)
 
-    if request.method == "POST":
+def get_reservations_by_customer(request, customer_id):
+    reservations = get_list_or_404(Reservation, customer_id=customer_id)
+    data = [{'id': res.id, 'table': res.table.number, 'date': res.date.strftime('%Y-%m-%d'), 'status': res.status} for res in reservations]
+    return JsonResponse({'reservations': data})
+
+@csrf_exempt
+def update_reservation_status(request, id):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        status = data.get('status')
+
+        if status not in ["ожидает", "подтверждено", "отменено"]:
+            return JsonResponse({'error': 'Неверный статус бронирования'}, status=400)
+
+        reservation = get_object_or_404(Reservation, id=id)
+        reservation.status = status
+        reservation.save()
+
+        return JsonResponse({'message': 'Статус бронирования обновлен'})
+
+@csrf_exempt
+def delete_reservation(request, id):
+    if request.method == 'DELETE':
+        reservation = get_object_or_404(Reservation, id=id)
         reservation.delete()
-        return redirect('reservations_list')
-
-    return render(request, 'reservations/delete_reservation.html', {'reservation': reservation})
-
-
-
-def add_reservation(request):
-    if request.method == "POST":
-        form = ReservationForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('reservations_list')
-    else:
-        form = ReservationForm()
-    return render(request, 'reservations/add_reservation.html', {'form': form})
-
-from django.shortcuts import render, redirect, get_object_or_404
-from .models import Reservation
-from .forms import ReservationForm
-
-
-def edit_reservation(request, id):
-    reservation = get_object_or_404(Reservation, id=id)
-    if request.method == "POST":
-        form = ReservationForm(request.POST, instance=reservation)
-        if form.is_valid():
-            form.save()
-            return redirect('reservations_list')
-    else:
-        form = ReservationForm(instance=reservation)
-    return render(request, 'reservations/edit_reservation.html', {'form': form, 'reservation': reservation})
+        return JsonResponse({'message': 'Бронь удалена'}, status=204)
