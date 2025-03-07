@@ -3,7 +3,7 @@ from django.urls import path
 from .views import add_table, edit_table, delete_table
 
 urlpatterns = [
-    path('', table_list, name='tables_list'),  # ✅ Должно быть name='tables_list'
+    path('', table_list, name='tables_list'), 
     path('available/', available_tables, name='tables_available'),
     path('', table_list, name='tables_list'),
     path('add/', add_table, name='add_table'),

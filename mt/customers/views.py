@@ -8,7 +8,7 @@ from .forms import CustomerForm
 
 
 def customer_list(request):
-    customers = Customer.objects.all()  # Получаем всех клиентов
+    customers = Customer.objects.all() 
     return render(request, 'customers/customers_list.html', {'customers': customers})
 
 
@@ -16,7 +16,7 @@ def customer_detail(request, id):
     customer = get_object_or_404(Customer, id=id)
     return JsonResponse({"id": customer.id, "name": customer.name, "phone": customer.phone})
 
-# 📌 Добавление клиента
+
 def add_customer(request):
     if request.method == "POST":
         form = CustomerForm(request.POST)
@@ -27,7 +27,6 @@ def add_customer(request):
         form = CustomerForm()
     return render(request, 'customers/add_customer.html', {'form': form})
 
-# 📌 Редактирование клиента
 def edit_customer(request, id):
     customer = get_object_or_404(Customer, id=id)
     if request.method == "POST":
@@ -39,7 +38,7 @@ def edit_customer(request, id):
         form = CustomerForm(instance=customer)
     return render(request, 'customers/edit_customer.html', {'form': form})
 
-# 📌 Удаление клиента
+
 def delete_customer(request, id):
     customer = get_object_or_404(Customer, id=id)
     if request.method == "POST":

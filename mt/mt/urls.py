@@ -7,6 +7,6 @@ urlpatterns = [
     path('customers/', include('customers.urls')),
     path('tables/', include('tables.urls')),
     path('reservations/', include('reservations.urls')),
-    path('accounts/', include('django.contrib.auth.urls')),  # Встроенные маршруты Django
-    path('', lambda request: redirect('/accounts/login/')),  # Перенаправление на страницу логина
+    path('accounts/', include('django.contrib.auth.urls')),  
+    path('', lambda request: redirect('/accounts/login/')),  
 ]

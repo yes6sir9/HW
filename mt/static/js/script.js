@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
     console.log("JavaScript подключен и работает!");
 
-    // Подтверждение перед удалением брони
+   
     let deleteButtons = document.querySelectorAll(".delete-btn");
     deleteButtons.forEach(button => {
         button.addEventListener("click", function (event) {
@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    // Фильтр доступных столиков по дате
+
     let dateInput = document.getElementById("date-filter");
     let tableRows = document.querySelectorAll(".table-row");
 
