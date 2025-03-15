@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>{{ note.title }}</h2>
+    <p>{{ note.content }}</p>
+    <p>Создано: {{ note.created_at }}</p>
+    <a href="{% url 'note_update' note.id %}">Редактировать</a>
+    <form method="POST" action="{% url 'note_delete' note.id %}">
+        {% csrf_token %}
+        <button type="submit">Удалить</button>
+    </form>
+{% endblock %}
